@@ -1,7 +1,6 @@
 package app.matrix;
 
-import java.util.Arrays;
-import java.util.List;
+import app.matrix.util.MatrixException;
 
 public class Matrix {
 
@@ -26,28 +25,36 @@ public class Matrix {
     }
 
     public class Dimension {
-        private int horizontal;
-        private int vertical;
+        private int rows;
+        private int columns;
 
-        public int getHorizontal() {
-            return horizontal;
+        public int getRows() {
+            return rows;
         }
 
-        public void setHorizontal(int horizontal) {
-            this.horizontal = horizontal;
+        public void setRows(int rows) {
+            this.rows = rows;
         }
 
-        public int getVertical() {
-            return vertical;
+        public int getColumns() {
+            return columns;
         }
 
-        public void setVertical(int vertical) {
-            this.vertical = vertical;
+        public void setColumns(int columns) {
+            this.columns = columns;
         }
 
-        public Dimension(int horizontal, int vertical) {
-            this.setHorizontal(horizontal);
-            this.setVertical(vertical);
+        public Dimension(int rows, int columns) {
+            this.setRows(rows);
+            this.setColumns(columns);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if(obj instanceof Dimension){
+                return (this.getColumns() == ((Dimension) obj).getColumns()) && (this.getRows() == ((Dimension) obj).getRows());
+            }
+            return false;
         }
     }
 
@@ -99,7 +106,7 @@ public class Matrix {
     }
 
     public Matrix(Dimension dimension) throws MatrixException {
-        this(dimension.getHorizontal(), dimension.getVertical(), null);
+        this(dimension.getRows(), dimension.getColumns(), null);
     }
 
     public static Matrix identityMatrix(int dim) throws MatrixException {
@@ -118,14 +125,14 @@ public class Matrix {
 
         StringBuilder builder = new StringBuilder("Matrix \"" + (this.getName() == null ? "Null Matrix" : this.getName()) + "\": {\n");
 
-        for (int i = 0; i < this.getDimension().getHorizontal(); i++) {
-            for (int j = 0; j < this.getDimension().getVertical(); j++) {
+        for (int i = 0; i < this.getDimension().getRows(); i++) {
+            for (int j = 0; j < this.getDimension().getColumns(); j++) {
                 if (j == 0) builder.append("\t");
                 builder.append(this.entries[i][j]);
-                if (j != this.getDimension().getVertical() - 1)
+                if (j != this.getDimension().getColumns() - 1)
                     builder.append(", ");
             }
-            if (i != this.getDimension().getHorizontal()) builder.append("\n");
+            if (i != this.getDimension().getRows()) builder.append("\n");
         }
 
         builder.append("}");
@@ -133,22 +140,9 @@ public class Matrix {
         return builder.toString();
     }
 
-    public static void main(String[] args) {
-        try {
-            Matrix m1 = new Matrix(3, 3, "dj", 1, 2, 4, 0, 1, 1, 1, 3, 5);
-            System.out.println(m1);
-            Matrix m2 = new Matrix(3, 2, "dj", 2, -1, 3, 1, 9, -2);
-            System.out.println(m2);
-            System.out.println(MatrixOperations.multiply(m1, m2));
-        } catch (MatrixException e) {
-            e.printStackTrace();
-        }
-    }
-
-}
-
-class MatrixException extends Exception {
-    public MatrixException(String message) {
-        super(message);
+    public boolean isSquare() {
+        return this.getDimension().getColumns() == this.getDimension().getRows();
     }
 }
+
+
